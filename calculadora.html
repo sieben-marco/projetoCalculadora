@@ -6,7 +6,12 @@
     <title>Calculadora</title>
     
     <style>
-        div {
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        div.wrapper {
+            --gap: 10px;
             position: absolute;
             top: 0;
             right: 0;
@@ -15,46 +20,118 @@
             margin: auto;
             display: flex;
             flex-wrap: wrap;
-            width: 124px;
+            justify-content: center;
+            gap: var(--gap);
+            width: 190px;
             height: fit-content;
-            gap: 5px;
-            font: bolder 20px Arial;
+            padding-inline: 10px;
+            padding-block: 25px;
+            font: bolder 20px monospace;
+            border: 5px solid #000;
+            border-radius: 5px;
         }
 
-        span {
-            border: solid 4px black;
-            border-radius: 8px;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
+        button {
+            border: solid 4px #000;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
             text-align: center;
+            cursor: pointer;
+            font: inherit;
+            color: #323232;
+            background-color: #fefefe;
+            transition: transform 100ms 10ms;
         }
 
-        span:first-child {
+        button:active {
+            transform: scale(0.9);
+        }
+
+        button::selection {
+            background-color: #000;
+            color: #fefefe;
+        }
+
+        div.visor {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: var(--gap);
             width: 100%;
+            height: 40px;
+            margin-bottom: 10px;
+            border: solid 4px #000;
+            border-radius: 8px;
+            background-color: #323232;
+            color: #fefefe;
+            cursor: text;
+        }
+
+        div.visor::after {
+            content: "";
+        }
+
+        div.visor::selection {
+            background-color: #fefefe;
+            color: #000;
         }
     </style>
 </head>
 <body>
-    <div>
-        <span></span>
-        <span>7</span>
-        <span>8</span>
-        <span>9</span>
-        <span>4</span>
-        <span>5</span>
-        <span>6</span>
-        <span>1</span>
-        <span>2</span>
-        <span>3</span>
-        <span>+</span>
-        <span>0</span>
-        <span>-</span>
+    <div class="wrapper">
+        <div class="visor">0</div>
+        <button value="7" onclick="selectValue(value)">7</button>
+        <button value="8" onclick="selectValue(value)">8</button>
+        <button value="9" onclick="selectValue(value)">9</button>
+        <button value="4" onclick="selectValue(value)">4</button>
+        <button value="5" onclick="selectValue(value)">5</button>
+        <button value="6" onclick="selectValue(value)">6</button>
+        <button value="1" onclick="selectValue(value)">1</button>
+        <button value="2" onclick="selectValue(value)">2</button>
+        <button value="3" onclick="selectValue(value)">3</button>
+        <button value="+" onclick="selectValue(value)">+</button>
+        <button value="0" onclick="selectValue(value)">0</button>
+        <button value="=" onclick="selectValue(value)">=</button>
     </div>
 
     <script>
-        function calc() {
-            
+        const visor = document.querySelector(".visor");
+        let s1 = "";
+        let s2 = "";
+        let n1, n2;
+        let change = 0;
+
+        function selectValue(n) {
+            if (change === 2) {
+                s1 = s2 = "";
+                change = n1 = n2 = 0;
+            }
+
+            if (change === 0) {
+                if (n !== "+" & n !== "=") {
+                    s1 += n;
+                    visor.textContent = s1;
+                } else if (n === "+") {
+                    visor.textContent += " +";
+                    n1 = Number(s1);
+                    change = 1;
+                }
+            } else {
+                if (n !== "+" & n !== "=") {
+                    s2 += n;
+                    visor.textContent = `${s1} + ${s2}`
+                } else if (n === "+") {
+                    n1 += Number(s2);
+                    s1 = String(n1);
+                    visor.textContent = `${s1} +`;
+                    s2 = "";
+                } else {
+                    n2 = Number(s2);
+                    visor.textContent = n1 + n2;
+                    change = 2;
+                }
+            }
         }
     </script>
 </body>
